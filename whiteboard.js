@@ -10,7 +10,14 @@ let drawing = false;
 let erasing = false;
 let color = colorPicker.value;
 let size = sizePicker.value;
+
+// Cursor hotspot offsets (pencil tip position in your cursor image)
+const hotspotX = 32; // horizontal tip in pixels
+const hotspotY = 64; // vertical tip in pixels
+
 let lastX = 0, lastY = 0;
+let points = [];
+let lastTime = 0;
 
 // Resize canvas to full window
 function resizeCanvas() {
@@ -20,36 +27,70 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-// Draw function (smooth)
-function draw(e) {
-  if (!drawing) return;
-
-  ctx.strokeStyle = erasing ? '#ffffff' : color;
-  ctx.lineWidth = size;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-
-  ctx.beginPath();
-  ctx.moveTo(lastX, lastY);
-  ctx.lineTo(e.offsetX, e.offsetY);
-  ctx.stroke();
-
-  lastX = e.offsetX;
-  lastY = e.offsetY;
+// Start drawing
+function startDrawing(e) {
+  drawing = true;
+  const { x, y } = getPointerPos(e);
+  lastX = x;
+  lastY = y;
+  points.push({ x, y, time: Date.now() });
+  e.preventDefault();
 }
 
-// Events
-canvas.addEventListener('mousedown', e => {
-  drawing = true;
-  lastX = e.offsetX;
-  lastY = e.offsetY;
-  draw(e);
-});
-canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mouseup', () => { drawing = false; });
-canvas.addEventListener('mouseout', () => { drawing = false; });
+// Stop drawing
+function stopDrawing() {
+  drawing = false;
+  points = [];
+}
 
-// Toolbar
+// Get pointer position aligned with pencil tip
+function getPointerPos(e) {
+  let rect = canvas.getBoundingClientRect();
+  let x = e.clientX - rect.left - hotspotX;
+  let y = e.clientY - rect.top - hotspotY;
+  return { x, y };
+}
+
+// Draw function (smooth)
+function render() {
+  if (points.length > 1) {
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+
+    for (let i = 1; i < points.length; i++) {
+      const p0 = points[i - 1];
+      const p1 = points[i];
+
+      // Optional: dynamic thickness based on speed
+      const dist = Math.hypot(p1.x - p0.x, p1.y - p0.y);
+      const time = p1.time - p0.time;
+      let speed = time > 0 ? dist / time : 0;
+      ctx.lineWidth = Math.max(1, size - speed * 10); // adjust multiplier for feel
+
+      ctx.strokeStyle = erasing ? '#ffffff' : color;
+      ctx.moveTo(p0.x, p0.y);
+      ctx.lineTo(p1.x, p1.y);
+      ctx.stroke();
+    }
+
+    points = [points[points.length - 1]]; // keep last point
+  }
+  requestAnimationFrame(render);
+}
+render();
+
+// Pointer events (mouse + touch)
+canvas.addEventListener('pointerdown', startDrawing);
+canvas.addEventListener('pointermove', e => {
+  if (!drawing) return;
+  const { x, y } = getPointerPos(e);
+  points.push({ x, y, time: Date.now() });
+});
+canvas.addEventListener('pointerup', stopDrawing);
+canvas.addEventListener('pointerout', stopDrawing);
+
+// Toolbar actions
 colorPicker.addEventListener('input', e => { color = e.target.value; erasing = false; });
 sizePicker.addEventListener('input', e => size = e.target.value);
 eraserBtn.addEventListener('click', () => { erasing = true; });
