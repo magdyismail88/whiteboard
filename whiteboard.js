@@ -10,8 +10,9 @@ let drawing = false;
 let erasing = false;
 let color = colorPicker.value;
 let size = sizePicker.value;
+let lastX = 0, lastY = 0;
 
-// Set canvas to full window size
+// Resize canvas to full window
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight - document.querySelector('.toolbar').offsetHeight;
@@ -19,35 +20,36 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-// Draw function
+// Draw function (smooth)
 function draw(e) {
   if (!drawing) return;
+
   ctx.strokeStyle = erasing ? '#ffffff' : color;
   ctx.lineWidth = size;
   ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
 
+  ctx.beginPath();
+  ctx.moveTo(lastX, lastY);
   ctx.lineTo(e.offsetX, e.offsetY);
   ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(e.offsetX, e.offsetY);
+
+  lastX = e.offsetX;
+  lastY = e.offsetY;
 }
 
 // Events
 canvas.addEventListener('mousedown', e => {
   drawing = true;
+  lastX = e.offsetX;
+  lastY = e.offsetY;
   draw(e);
 });
 canvas.addEventListener('mousemove', draw);
-canvas.addEventListener('mouseup', () => {
-  drawing = false;
-  ctx.beginPath();
-});
-canvas.addEventListener('mouseout', () => {
-  drawing = false;
-  ctx.beginPath();
-});
+canvas.addEventListener('mouseup', () => { drawing = false; });
+canvas.addEventListener('mouseout', () => { drawing = false; });
 
-// Toolbar events
+// Toolbar
 colorPicker.addEventListener('input', e => { color = e.target.value; erasing = false; });
 sizePicker.addEventListener('input', e => size = e.target.value);
 eraserBtn.addEventListener('click', () => { erasing = true; });
