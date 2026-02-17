@@ -18,6 +18,7 @@ body, html {
 canvas {
   flex: 1;
   border-top: 1px solid #ccc;
-  cursor: url('assets/pencil.png'), auto; /* pencil cursor */
+  /* hotspot X = 32 (center), Y = 64 (bottom) */
+  cursor: url('assets/pencil.png') 32 64, auto;
   display: block;
 }
