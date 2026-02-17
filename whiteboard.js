@@ -11,13 +11,14 @@ let erasing = false;
 let color = colorPicker.value;
 let size = sizePicker.value;
 
-// Cursor hotspot offsets (pencil tip position in your cursor image)
-const hotspotX = 32; // horizontal tip in pixels
-const hotspotY = 64; // vertical tip in pixels
+// PNG cursor tip offset
+const hotspotX = 30; // horizontal offset to pencil tip
+const hotspotY = 62; // vertical offset to pencil tip
+const offsetX = -2;  // fine-tune horizontal shift
+const offsetY = 0;   // fine-tune vertical shift
 
 let lastX = 0, lastY = 0;
 let points = [];
-let lastTime = 0;
 
 // Resize canvas to full window
 function resizeCanvas() {
@@ -45,13 +46,13 @@ function stopDrawing() {
 
 // Get pointer position aligned with pencil tip
 function getPointerPos(e) {
-  let rect = canvas.getBoundingClientRect();
-  let x = e.clientX - rect.left - hotspotX;
-  let y = e.clientY - rect.top - hotspotY;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left - hotspotX + offsetX;
+  const y = e.clientY - rect.top - hotspotY + offsetY;
   return { x, y };
 }
 
-// Draw function (smooth)
+// Smooth rendering with optional dynamic thickness
 function render() {
   if (points.length > 1) {
     ctx.lineCap = 'round';
@@ -62,11 +63,11 @@ function render() {
       const p0 = points[i - 1];
       const p1 = points[i];
 
-      // Optional: dynamic thickness based on speed
+      // dynamic thickness based on speed (optional)
       const dist = Math.hypot(p1.x - p0.x, p1.y - p0.y);
       const time = p1.time - p0.time;
       let speed = time > 0 ? dist / time : 0;
-      ctx.lineWidth = Math.max(1, size - speed * 10); // adjust multiplier for feel
+      ctx.lineWidth = Math.max(1, size - speed * 10);
 
       ctx.strokeStyle = erasing ? '#ffffff' : color;
       ctx.moveTo(p0.x, p0.y);
@@ -74,7 +75,7 @@ function render() {
       ctx.stroke();
     }
 
-    points = [points[points.length - 1]]; // keep last point
+    points = [points[points.length - 1]]; // keep last point for continuity
   }
   requestAnimationFrame(render);
 }
