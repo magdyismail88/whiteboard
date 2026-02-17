@@ -12,8 +12,8 @@ let color = colorPicker.value;
 let size = sizePicker.value;
 
 // PNG cursor tip offset
-const hotspotX = 30; // horizontal offset to pencil tip
-const hotspotY = 62; // vertical offset to pencil tip
+const hotspotX = 50; // horizontal offset to pencil tip
+const hotspotY = 0; // vertical offset to pencil tip
 const offsetX = -2;  // fine-tune horizontal shift
 const offsetY = 0;   // fine-tune vertical shift
 

@@ -19,6 +19,6 @@ canvas {
   flex: 1;
   border-top: 1px solid #ccc;
   /* PNG cursor with hotspot at pencil tip */
-  cursor: url('assets/pencil.png') 30 62, auto;
+  cursor: url('assets/pencil.png') 60 60 , auto;
   display: block;
 }
