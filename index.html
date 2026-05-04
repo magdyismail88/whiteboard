@@ -1,23 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Whiteboard</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Whiteboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="toolbar">
-  <input type="color" id="colorPicker" value="#000000">
-  <input type="range" id="sizePicker" min="1" max="20" value="3">
-  <button id="eraser">Eraser</button>
-  <button id="clear">Clear</button>
-  <button id="download">Download</button>
-</div>
+    <div class="toolbar">
+        <div class="tool-group">
+            <input type="color" id="colorPicker" value="#000000">
+            <div class="separator"></div>
+            <input type="range" id="sizePicker" min="1" max="20" value="3">
+            <span>Size</span>
+        </div>
+        
+        <div class="spacer"></div>
 
-<canvas id="whiteboard"></canvas>
+        <div class="tool-group">
+            <button class="action-btn" id="undo">Undo</button>
+            <button class="action-btn" id="clear">Clear All</button>
+            <button class="action-btn download">Export PNG</button>
+        </div>
+    </div>
 
-<script src="whiteboard.js"></script>
+    <div class="main-container">
+        <div class="side-menu">
+            <button class="tool-btn" data-tool="move" title="Move Tool">
+                <i>✣</i>
+            </button>
+            <button class="tool-btn active" data-tool="pencil" title="Pencil">
+                <i>✎</i>
+            </button>
+            <button class="tool-btn" data-tool="line" title="Line">
+                <i>╱</i>
+            </button>
+            <button class="tool-btn" data-tool="rect" title="Rectangle">
+                <i>▭</i>
+            </button>
+            <button class="tool-btn" data-tool="circle" title="Circle">
+                <i>○</i>
+            </button>
+            <button class="tool-btn" data-tool="text" title="Text">
+                <i>T</i>
+            </button>
+            <button class="tool-btn" data-tool="erase" title="Eraser">
+                <i>✖</i>
+            </button>
+            <button class="tool-btn" data-tool="group" title="Group Elements">
+                <i>⧉</i>
+            </button>
+        </div>
+
+        <canvas id="whiteboard"></canvas>
+
+        <div id="cursor-ghost"></div>
+    </div>
+
+    <script src="whiteboard.js"></script>
 </body>
 </html>
