@@ -255,3 +255,27 @@ toolButtons.forEach(btn => btn.onclick = () => {
 });
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 saveState();
+
+const themeToggle = document.getElementById('theme-toggle');
+let isDarkMode = false;
+
+if (localStorage.getItem('theme') === 'dark') {
+    isDarkMode = true;
+    document.documentElement.setAttribute('data-theme', 'dark');
+    themeToggle.innerText = '☀️';
+}
+
+themeToggle.onclick = () => {
+    isDarkMode = !isDarkMode;
+    document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+    themeToggle.innerText = isDarkMode ? '☀️' : '🌙';
+    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    
+    const el = document.getElementById("whiteboard");
+
+    if (el.style.filter === "invert(1)") {
+        el.style.filter = "invert(0)";
+    } else {
+        el.style.filter = "invert(1)";
+    }
+};
